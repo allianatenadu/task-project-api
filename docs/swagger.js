@@ -8,7 +8,7 @@ const options = {
       title: "Task & Project Management API",
       version: "1.0.0",
       description:
-        "A comprehensive API for managing tasks and projects with full CRUD operations, filtering, and pagination support.",
+        "A comprehensive API for managing tasks and projects with full CRUD operations, filtering, pagination support, and secure authentication using JWT tokens and Google OAuth.",
       contact: {
         name: "API Support",
         email: "support@example.com",
@@ -16,7 +16,7 @@ const options = {
     },
     servers: [
       {
-        url: process.env.DEPLOYED_URL || "http://localhost:3000",
+        url: process.env.DEPLOYED_URL || "http://localhost:3005",
         description: process.env.DEPLOYED_URL ? "Production server" : "Development server",
       },
     ],
@@ -279,6 +279,7 @@ const options = {
   apis: [
     path.join(__dirname, "../routes/tasks.js"),
     path.join(__dirname, "../routes/projects.js"),
+    path.join(__dirname, "../routes/auth.js"),
   ],
 };
 

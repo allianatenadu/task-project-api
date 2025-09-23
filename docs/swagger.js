@@ -16,8 +16,8 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Development server",
+        url: process.env.DEPLOYED_URL || "http://localhost:3000",
+        description: process.env.DEPLOYED_URL ? "Production server" : "Development server",
       },
     ],
     components: {

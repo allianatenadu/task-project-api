@@ -4,6 +4,12 @@ A comprehensive REST API for managing tasks and projects built with Node.js, Exp
 
 ## Features
 
+- **User Authentication**: JWT-based authentication with secure token management
+- **User Registration**: Complete user registration system with validation
+- **Google OAuth**: Social authentication with Google accounts
+- **Password Security**: bcrypt password hashing with salt rounds
+- **Profile Management**: User profile viewing and updating capabilities
+- **Password Management**: Secure password change functionality
 - **Task Management**: Create, read, update, and delete tasks
 - **Project Management**: Manage projects with team assignments and progress tracking
 - **Advanced Filtering**: Filter tasks and projects by status, priority, manager, etc.
@@ -13,15 +19,18 @@ A comprehensive REST API for managing tasks and projects built with Node.js, Exp
 - **MongoDB Integration**: Robust database operations with Mongoose ODM
 - **Error Handling**: Comprehensive error handling and validation
 - **CORS Support**: Cross-origin resource sharing enabled
+- **Rate Limiting**: Protection against brute force attacks
 
 ## Tech Stack
 
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Validation**: Joi
+- **Authentication**: JWT (jsonwebtoken), bcryptjs for password hashing
+- **OAuth**: Google Auth Library for Google OAuth integration
+- **Validation**: Joi for input validation
 - **Documentation**: Swagger/OpenAPI
-- **Other**: CORS, dotenv
+- **Other**: CORS, dotenv, express-rate-limit for security
 
 ## Installation
 
@@ -37,12 +46,27 @@ A comprehensive REST API for managing tasks and projects built with Node.js, Exp
    ```
 
 3. **Environment Setup**
-   Create a `.env` file in the root directory with the following variables:
-   ```env
-   PORT=3000
-   MONGO_URI=mongodb://localhost:27017/taskprojectdb
-   NODE_ENV=development
-   ```
+    Create a `.env` file in the root directory with the following variables:
+    ```env
+    PORT=3005
+    MONGODB_URI=mongodb+srv://your-connection-string
+    NODE_ENV=development
+
+    # JWT Configuration
+    JWT_SECRET=your-super-secret-jwt-key
+    JWT_EXPIRE=7d
+
+    # Google OAuth Configuration (optional)
+    GOOGLE_CLIENT_ID=your-google-client-id
+    GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+    # API Configuration
+    API_VERSION=v1
+
+    # Rate Limiting (optional)
+    RATE_LIMIT_WINDOW_MS=900000
+    RATE_LIMIT_MAX_REQUESTS=100
+    ```
 
 4. **Start the server**
    ```bash
@@ -55,9 +79,10 @@ A comprehensive REST API for managing tasks and projects built with Node.js, Exp
 
 ## API Endpoints
 
-### Base URL
+### Base URLs
 ```
-http://localhost:3000
+Local Development: http://localhost:3005
+Production: https://task-project-api-yfnu.onrender.com
 ```
 
 ### Tasks Endpoints
@@ -85,6 +110,18 @@ http://localhost:3000
 | GET | `/api/projects/manager/:manager` | Get projects by manager |
 | GET | `/api/projects/overdue` | Get overdue projects |
 | PUT | `/api/projects/:id/progress` | Update project progress |
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register a new user account |
+| POST | `/api/auth/login` | Login with email and password |
+| POST | `/api/auth/google` | Authenticate with Google OAuth |
+| GET | `/api/auth/profile` | Get current user profile (protected) |
+| PUT | `/api/auth/profile` | Update user profile (protected) |
+| PUT | `/api/auth/change-password` | Change user password (protected) |
+| POST | `/api/auth/logout` | Logout user (protected) |
 
 ### Other Endpoints
 
@@ -116,6 +153,72 @@ http://localhost:3000
 - `search` (string): Search in name and description
 
 ## Request/Response Examples
+
+### User Registration
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "email": "john.doe@example.com",
+  "password": "securepassword123",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+### User Login
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "securepassword123"
+}
+```
+
+### Google OAuth Authentication
+```bash
+POST /api/auth/google
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE2Nz..."
+}
+```
+
+### Get User Profile (Protected Route)
+```bash
+GET /api/auth/profile
+Authorization: Bearer <your-jwt-token>
+```
+
+### Update User Profile (Protected Route)
+```bash
+PUT /api/auth/profile
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Updated",
+  "username": "johnupdated"
+}
+```
+
+### Change Password (Protected Route)
+```bash
+PUT /api/auth/change-password
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "currentPassword": "oldpassword123",
+  "newPassword": "newpassword456"
+}
+```
 
 ### Create a Task
 ```bash
@@ -198,6 +301,34 @@ Content-Type: application/json
 }
 ```
 
+## Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. Once a user registers and logs in, they receive a token that must be included in the Authorization header for protected routes.
+
+### Authentication Flow
+
+1. **Register**: Create a new user account with `POST /api/auth/register`
+2. **Login**: Authenticate with `POST /api/auth/login` to receive a JWT token
+3. **Access Protected Routes**: Include the token in the Authorization header as `Bearer <token>`
+4. **Google OAuth**: Alternatively, authenticate using Google OAuth with `POST /api/auth/google`
+
+### Protected Routes
+
+The following routes require authentication:
+- All `/api/tasks/*` endpoints
+- All `/api/projects/*` endpoints
+- `GET /api/auth/profile`
+- `PUT /api/auth/profile`
+- `PUT /api/auth/change-password`
+- `POST /api/auth/logout`
+
+### Token Management
+
+- Tokens expire after 7 days (configurable via `JWT_EXPIRE` environment variable)
+- Include tokens in requests using: `Authorization: Bearer <your-jwt-token>`
+- Store tokens securely on the client-side
+- Tokens are automatically invalidated on logout
+
 ## API Documentation
 
 Interactive API documentation is available at `/api-docs` when the server is running. This provides a user-friendly interface to test all endpoints with request/response examples.
@@ -241,16 +372,21 @@ task-project-api/
 ├── .env                   # Environment variables
 ├── .gitignore            # Git ignore rules
 ├── config/
-│   └── database.js       # Database configuration
+│   ├── database.js       # Database configuration
+│   └── passport.js       # Google OAuth configuration
 ├── models/
+│   ├── userModel.js      # User data model
 │   ├── taskModel.js      # Task data model
 │   └── projectModel.js   # Project data model
 ├── controllers/
+│   ├── authController.js     # Authentication business logic
 │   ├── taskController.js     # Task business logic
 │   └── projectController.js  # Project business logic
 ├── middleware/
+│   ├── auth.js           # Authentication middleware
 │   └── validation.js     # Input validation middleware
 ├── routes/
+│   ├── auth.js           # Authentication API routes
 │   ├── tasks.js          # Task API routes
 │   └── projects.js       # Project API routes
 ├── docs/

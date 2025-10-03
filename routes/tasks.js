@@ -94,6 +94,8 @@ const { validateTask } = require("../middleware/validation");
  *   get:
  *     summary: Returns the list of all tasks with filtering and pagination
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -177,6 +179,8 @@ router.get("/", getAllTasks);
  *   get:
  *     summary: Get tasks by status
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: status
@@ -214,6 +218,8 @@ router.get("/status/:status", getTasksByStatus);
  *   get:
  *     summary: Get overdue tasks
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of overdue tasks
@@ -243,6 +249,8 @@ router.get("/overdue", getOverdueTasks);
  *   get:
  *     summary: Get a task by ID
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -278,6 +286,8 @@ router.get("/:id", getTaskById);
  *   post:
  *     summary: Create a new task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -312,6 +322,8 @@ router.post("/", validateTask, createTask);
  *   put:
  *     summary: Update a task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -353,6 +365,8 @@ router.put("/:id", validateTask, updateTask);
  *   delete:
  *     summary: Delete a task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

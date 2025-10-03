@@ -117,6 +117,8 @@ const {
  *   get:
  *     summary: Returns the list of all projects with filtering and pagination
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -195,6 +197,8 @@ router.get('/', getAllProjects);
  *   get:
  *     summary: Get projects by status
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: status
@@ -232,6 +236,8 @@ router.get('/status/:status', getProjectsByStatus);
  *   get:
  *     summary: Get projects by manager
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: manager
@@ -268,6 +274,8 @@ router.get('/manager/:manager', getProjectsByManager);
  *   get:
  *     summary: Get overdue projects
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: The list of overdue projects
@@ -297,6 +305,8 @@ router.get('/overdue', getOverdueProjects);
  *   get:
  *     summary: Get a project by ID with associated tasks
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -339,6 +349,8 @@ router.get('/:id', getProjectById);
  *   post:
  *     summary: Create a new project
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -371,6 +383,8 @@ router.post('/', validateProject, createProject);
  *   put:
  *     summary: Update a project
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -412,6 +426,8 @@ router.put('/:id', validateProject, updateProject);
  *   put:
  *     summary: Update project progress
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -454,6 +470,8 @@ router.put('/:id/progress', updateProjectProgress);
  *   delete:
  *     summary: Delete a project (only if no tasks exist)
  *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

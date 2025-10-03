@@ -48,6 +48,10 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Created by is required'],
     trim: true
+  },
+  completedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true,
